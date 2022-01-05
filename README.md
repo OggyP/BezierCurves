@@ -23,6 +23,10 @@ Made in C++ with [SFML](https://www.sfml-dev.org).
 
 # Install
 
+## Download
+
+Naviagte to the releases tab on the right. Follow the instuctions provided there.
+
 ## Compile the Program
 
 Clone this repository and follow the instuctions on the [SFML Visual Studio Code Boilderplate](https://github.com/andrew-r-king/sfml-vscode-boilerplate) to learn how to compile the program from source.
