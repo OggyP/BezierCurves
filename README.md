@@ -19,6 +19,8 @@ Made in C++ with [SFML](https://www.sfml-dev.org).
 
 > Press `u` to **u**ndo placing the last point (delete the last point placed down).
 
+> Press `l` to toggle showing the **l**ines that are used to illustrate how the bezier curve is formed.
+
 # Install
 
 ## Compile the Program

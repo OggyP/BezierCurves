@@ -45,7 +45,7 @@ std::vector<sf::Vector2f> calculateCurve(std::vector<sf::Vector2f> points)
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(800, 600), "Bezier Curve Visualisation!");
+	sf::RenderWindow window(sf::VideoMode(1280, 720), "Bezier Curve Visualisation!");
 	window.setFramerateLimit(60);
 	sf::Vertex line[2];
 	line[0].color = sf::Color::White;
@@ -62,8 +62,12 @@ int main()
 	if (clickCursor.loadFromSystem(sf::Cursor::Hand) && normalCursor.loadFromSystem(sf::Cursor::Arrow))
 		canSetCursor = true;
 
+	bool LWasPressesed = false;
 	bool undoWasPressed = false;
 	bool mouseWasPressed = false;
+
+	bool showLines = true;
+
 	sf::Vector2f* pointSelected;
 	bool pointIsSelected = false;
 
@@ -103,6 +107,18 @@ int main()
 				points.clear();
 				curve = calculateCurve(points);
 			}
+
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
+			{
+				if (!LWasPressesed)
+				{
+					showLines = !showLines;
+					LWasPressesed = true;
+					lerpAmt = 0.5;
+				}
+			}
+			else
+				LWasPressesed = false;
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::U))
 			{
@@ -184,38 +200,41 @@ int main()
 		if (points.size())
 		{
 
-			circle.setOutlineColor(sf::Color::Green);
-
-			auto newPoints = points;
-
-			const float colourChangeAmt = 205.0f / (float)(points.size() - 2);
-			int lerpLayer = -1;
-			while (newPoints.size() > 1)
+			if (showLines)
 			{
-				const float showColour = 255.0f - lerpLayer * colourChangeAmt;
-				std::vector<sf::Vector2f> tempPoints;
-				auto startingPoint = newPoints[0];
-				line[0].position = newPoints[0];
-				for (size_t i = 1; i < newPoints.size(); i++)
+				circle.setOutlineColor(sf::Color::Green);
+
+				auto newPoints = points;
+
+				const float colourChangeAmt = 205.0f / (float)(points.size() - 2);
+				int lerpLayer = -1;
+				while (newPoints.size() > 1)
 				{
-					const auto& point = newPoints[i];
-					sf::Vector2f newPoint(naive_lerp(startingPoint.x, point.x, lerpAmt), naive_lerp(startingPoint.y, point.y, lerpAmt));
-					tempPoints.push_back(newPoint);
-					startingPoint = point;
-					if (lerpLayer != -1)
+					const float showColour = 255.0f - lerpLayer * colourChangeAmt;
+					std::vector<sf::Vector2f> tempPoints;
+					auto startingPoint = newPoints[0];
+					line[0].position = newPoints[0];
+					for (size_t i = 1; i < newPoints.size(); i++)
 					{
-						line[0].color = sf::Color(0, (float)showColour, 0);
-						line[1].color = sf::Color(0, (float)showColour, 0);
-						line[1].position = point;
-						window.draw(line, 2, sf::Lines);
-						line[0].position = line[1].position;
+						const auto& point = newPoints[i];
+						sf::Vector2f newPoint(naive_lerp(startingPoint.x, point.x, lerpAmt), naive_lerp(startingPoint.y, point.y, lerpAmt));
+						tempPoints.push_back(newPoint);
+						startingPoint = point;
+						if (lerpLayer != -1)
+						{
+							line[0].color = sf::Color(0, (float)showColour, 0);
+							line[1].color = sf::Color(0, (float)showColour, 0);
+							line[1].position = point;
+							window.draw(line, 2, sf::Lines);
+							line[0].position = line[1].position;
+						}
 					}
+					newPoints = tempPoints;
+					lerpLayer++;
 				}
-				newPoints = tempPoints;
-				lerpLayer++;
+				circle.setPosition(newPoints[0]);
+				window.draw(circle);
 			}
-			circle.setPosition(newPoints[0]);
-			window.draw(circle);
 
 			line[0].color = sf::Color::Red;
 			line[1].color = sf::Color::Red;
@@ -252,13 +271,17 @@ int main()
 			for (size_t i = 1; i < points.size(); i++)
 			{
 				const auto& point = points[i];
-				line[1].position = point;
-				window.draw(line, 2, sf::Lines);
-				line[0].position = line[1].position;
+
 				if (drawStartPoints)
 				{
 					circle.setPosition(point);
 					window.draw(circle);
+				}
+				if (showLines)
+				{
+					line[1].position = point;
+					window.draw(line, 2, sf::Lines);
+					line[0].position = line[1].position;
 				}
 			}
 		}
