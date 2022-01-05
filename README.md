@@ -1,5 +1,7 @@
 # Bezier Curve Visualsation
 
+![Bezier Curve Visualsation Example Image](https://cdn.oggyp.com/downloads/bezier_curve_visualisation.png)
+
 A program which can be used to much around with bezier curves and visualise how bezier curves are formed.
 Made in C++ with [SFML](https://www.sfml-dev.org).
 
