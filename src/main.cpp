@@ -1,5 +1,4 @@
-#include <SFML/Graphics.hpp>
-#include <iostream>
+#include "Platform/Platform.hpp"
 
 #define CURVE_RESOLUTION 100 // How many lines are used to make up the curve
 
@@ -45,8 +44,20 @@ std::vector<sf::Vector2f> calculateCurve(std::vector<sf::Vector2f> points)
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(1280, 720), "Bezier Curve Visualisation!");
+	util::Platform platform;
+
+#if defined(_DEBUG)
+	std::cout << "Hello World!" << std::endl;
+#endif
+
+	sf::RenderWindow window;
+	// in Windows at least, this must be called before creating the window
+	float screenScalingFactor = platform.getScreenScalingFactor(window.getSystemHandle());
+	// Use the screenScalingFactor
+	window.create(sf::VideoMode(1280.0f * screenScalingFactor, 720.0f * screenScalingFactor), "Bezier Curve Visualiser!");
+	platform.setIcon(window.getSystemHandle());
 	window.setFramerateLimit(60);
+
 	sf::Vertex line[2];
 	line[0].color = sf::Color::White;
 	line[1].color = sf::Color::White;
@@ -68,7 +79,9 @@ int main()
 
 	bool showLines = true;
 
-	sf::Vector2f* pointSelected;
+	auto randomPoint = sf::Vector2f(0, 0); // placeholder to stop gcc saying it is not initialised
+
+	sf::Vector2f* pointSelected = &randomPoint;
 	bool pointIsSelected = false;
 
 	const bool drawStartPoints = true;
