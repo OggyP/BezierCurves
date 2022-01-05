@@ -91,12 +91,12 @@ int main()
 		{
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 			{
-				if (lerpAmt > 0)
-					lerpAmt -= 0.02;
+				if (lerpAmt >= 0.01)
+					lerpAmt -= 0.01;
 			}
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-				if (lerpAmt <= 0.98)
-					lerpAmt += 0.02;
+				if (lerpAmt <= 0.99)
+					lerpAmt += 0.01;
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
 			{
@@ -183,14 +183,16 @@ int main()
 
 		if (points.size())
 		{
-			line[0].color = sf::Color::Green;
-			line[1].color = sf::Color::Green;
 
 			circle.setOutlineColor(sf::Color::Green);
 
 			auto newPoints = points;
+
+			const float colourChangeAmt = 205.0f / (float)(points.size() - 2);
+			int lerpLayer = -1;
 			while (newPoints.size() > 1)
 			{
+				const float showColour = 255.0f - lerpLayer * colourChangeAmt;
 				std::vector<sf::Vector2f> tempPoints;
 				auto startingPoint = newPoints[0];
 				line[0].position = newPoints[0];
@@ -200,11 +202,17 @@ int main()
 					sf::Vector2f newPoint(naive_lerp(startingPoint.x, point.x, lerpAmt), naive_lerp(startingPoint.y, point.y, lerpAmt));
 					tempPoints.push_back(newPoint);
 					startingPoint = point;
-					line[1].position = point;
-					window.draw(line, 2, sf::Lines);
-					line[0].position = line[1].position;
+					if (lerpLayer != -1)
+					{
+						line[0].color = sf::Color(0, (float)showColour, 0);
+						line[1].color = sf::Color(0, (float)showColour, 0);
+						line[1].position = point;
+						window.draw(line, 2, sf::Lines);
+						line[0].position = line[1].position;
+					}
 				}
 				newPoints = tempPoints;
+				lerpLayer++;
 			}
 			circle.setPosition(newPoints[0]);
 			window.draw(circle);
