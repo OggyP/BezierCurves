@@ -152,16 +152,19 @@ int main()
 		auto mousePos = sf::Mouse::getPosition(window);
 		if (canSetCursor)
 		{
-			window.setMouseCursor(normalCursor);
+			bool mouseOnPoint = false;
 			for (auto& point : points)
 				if (pow(mousePos.x - point.x, 2) + pow(mousePos.y - point.y, 2) < 100)
 				{
 					window.setMouseCursor(clickCursor);
+					mouseOnPoint = true;
 					break;
 				}
+			if (!mouseOnPoint)
+				window.setMouseCursor(normalCursor);
 		}
 
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && window.hasFocus() && mousePos.x > 0 && mousePos.y > 0)
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && window.hasFocus() && mousePos.y > 0)
 		{
 			if (!mouseWasPressed)
 			{
